@@ -120,9 +120,20 @@ public static class SeedData
             }
         }
 
-        await SeedFhirScopes(configDbContext, "patient");
-        await SeedFhirScopes(configDbContext, "user");
-        await SeedFhirScopes(configDbContext, "system");
+        Func<string, bool> treatmentSpecification = r => r is "Patient" or "AllergyIntolerance" or "Condition" or "Encounter";
+        var scopeProperties = new Dictionary<string, string>();
+        scopeProperties.Add("smart_version", "v1");
+
+        await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV1Scopes("patient", treatmentSpecification), scopeProperties);
+        await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV1Scopes("user", treatmentSpecification), scopeProperties);
+        await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV1Scopes("system", treatmentSpecification), scopeProperties);
+
+        scopeProperties = new Dictionary<string, string>();
+        scopeProperties.Add("smart_version", "v2");
+        await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV2Scopes("patient", treatmentSpecification), scopeProperties);
+        await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV2Scopes("user", treatmentSpecification), scopeProperties);
+        await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV2Scopes("system", treatmentSpecification), scopeProperties);
+
 
         if (configDbContext.IdentityResources.All(i => i.Name != UdapConstants.StandardScopes.FhirUser))
         {
@@ -133,15 +144,13 @@ public static class SeedData
         }
     }
 
-    static async Task SeedFhirScopes(ConfigurationDbContext configDbContext, string prefix)
+    private static async Task SeedFhirScopes(
+        ConfigurationDbContext configDbContext,
+        HashSet<string>? seedScopes,
+        Dictionary<string, string> scopeProperties)
     {
-        //TODO: needs more thought.  The should be richer than a list of strings. And plenty of constants to code up.
-        // And of course there is some kind of Policy engine that should be here.
-        var seedScopes = Hl7ModelInfoExtensions.BuildHl7FhirV1AndV2Scopes(prefix);
-
         var apiScopes = configDbContext.ApiScopes
             .Include(s => s.Properties)
-            .Where(s => s.Enabled)
             .Select(s => s)
             .ToList();
 
@@ -152,11 +161,20 @@ public static class SeedData
             {
                 var apiScope = new ApiScope(scopeName);
                 apiScope.ShowInDiscoveryDocument = false;
-                if (apiScope.Name == "system/*.read")
+
+                if (apiScope.Name.StartsWith("system/*."))
                 {
                     apiScope.ShowInDiscoveryDocument = true;
+                    apiScope.Enabled = false;
                 }
+
                 apiScope.Properties.Add("udap_prefix", "system");
+
+                foreach (var scopeProperty in scopeProperties)
+                {
+                    apiScope.Properties.Add(scopeProperty.Key, scopeProperty.Value);
+                }
+
                 configDbContext.ApiScopes.Add(apiScope.ToEntity());
             }
         }
@@ -168,38 +186,49 @@ public static class SeedData
             {
                 var apiScope = new ApiScope(scopeName);
                 apiScope.ShowInDiscoveryDocument = false;
-                if (apiScope.Name == "patient/*.read")
+
+                if (apiScope.Name.StartsWith("patient/*."))
                 {
                     apiScope.ShowInDiscoveryDocument = true;
+                    apiScope.Enabled = false;
                 }
+
                 apiScope.Properties.Add("udap_prefix", "user");
+
+                foreach (var scopeProperty in scopeProperties)
+                {
+                    apiScope.Properties.Add(scopeProperty.Key, scopeProperty.Value);
+                }
+
                 configDbContext.ApiScopes.Add(apiScope.ToEntity());
             }
         }
 
-        foreach (var scopeName in seedScopes.Where(s => s.StartsWith("patient")))
+        foreach (var scopeName in seedScopes.Where(s => s.StartsWith("patient")).ToList())
         {
             if (!apiScopes.Any(s => s.Name == scopeName && s.Properties.Exists(p => p.Key == "udap_prefix" && p.Value == "patient")))
             {
                 var apiScope = new ApiScope(scopeName);
                 apiScope.ShowInDiscoveryDocument = false;
-                if (apiScope.Name == "patient/*.read")
+
+                if (apiScope.Name.StartsWith("patient/*."))
                 {
                     apiScope.ShowInDiscoveryDocument = true;
+                    apiScope.Enabled = false;
                 }
+
                 apiScope.Properties.Add("udap_prefix", "patient");
+
+                foreach (var scopeProperty in scopeProperties)
+                {
+                    apiScope.Properties.Add(scopeProperty.Key, scopeProperty.Value);
+                }
+
                 configDbContext.ApiScopes.Add(apiScope.ToEntity());
             }
         }
 
         await configDbContext.SaveChangesAsync();
 
-        if (configDbContext.ApiScopes.All(s => s.Name != "udap"))
-        {
-            var apiScope = new ApiScope("udap");
-            configDbContext.ApiScopes.Add(apiScope.ToEntity());
-
-            await configDbContext.SaveChangesAsync();
-        }
     }
 }
