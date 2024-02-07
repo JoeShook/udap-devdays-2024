@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 10s # makes for a good demo
+
+scrape_configs:
+  - job_name: 'udap-fhirserver-devdays'
+    static_configs:
+      - targets: ['host.docker.internal:7017'] # hard-coded port matches launchSettings.json
+  - job_name: 'udap-authserver-devdays'
+    static_configs:
+      - targets: ['host.docker.internal:5102'] # hard-coded port matches launchSettings.json
+  - job_name: 'udap-idp-server-devdays'
+    static_configs:
+      - targets: ['host.docker.internal:5202'] # hard-coded port matches launchSettings.json
+  - job_name: 'udap-certificates-server-devdays'
+    static_configs:
+      - targets: ['host.docker.internal:5034'] # hard-coded port matches launchSettings.json
+       
