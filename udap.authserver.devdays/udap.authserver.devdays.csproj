@@ -35,11 +35,15 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.8.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.0.0-rc9.14" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
-    <PackageReference Include="Udap.Server" Version="0.3.31" />
+    <PackageReference Include="Udap.Server" Version="0.3.34" />
+    <PackageReference Include="Udap.UI" Version="0.3.34" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="CertificateStore\Community1\DevDaysCA_1.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CertificateStore\Community1\issued\DevDaysIdpClient.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="CertificateStore\Community2\DevDaysCA_2.crt">

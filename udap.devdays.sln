@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{6A82
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "udap.idp.server.devdays", "udap.idp.server.devdays\udap.idp.server.devdays.csproj", "{9CBDA329-E75F-41D5-AC91-851DFC5958B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "udap.idp.server.devdays", "udap.idp.server.devdays\udap.idp.server.devdays.csproj", "{9CBDA329-E75F-41D5-AC91-851DFC5958B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

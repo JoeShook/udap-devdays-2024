@@ -369,6 +369,7 @@ Then the following two lines will enabled the Idp UDAP Auth server to present si
 
 ```csharp
 
+  builder.Services.Configure<UdapClientOptions>(builder.Configuration.GetSection("UdapClientOptions"));
   builder.Services.Configure<UdapFileCertStoreManifest>(builder.Configuration.GetSection(Constants.UDAP_FILE_STORE_MANIFEST));
 
   builder.Services.AddUdapMetadataServer(builder.Configuration);

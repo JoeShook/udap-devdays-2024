@@ -2,10 +2,12 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.EntityFramework.Stores;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using udap.authserver.devdays.Pages;
 using Udap.Server.Configuration;
 using udap.authserver.devdays;
 using Udap.Server.Security.Authentication.TieredOAuth;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Udap.Common;
+using Udap.Client.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,9 @@ const string connectionString = @"Data Source=udap.authserver.devdays.EntityFram
 
 builder.Services.AddRazorPages();
 
+builder.Services.Configure<UdapClientOptions>(builder.Configuration.GetSection("UdapClientOptions"));
+builder.Services.Configure<UdapFileCertStoreManifest>(builder.Configuration.GetSection(Constants.UDAP_FILE_STORE_MANIFEST));
+
 builder.Services.AddUdapServer(
     options =>
     {
@@ -31,8 +36,7 @@ builder.Services.AddUdapServer(
         options.DefaultSystemScopes = udapServerOptions.DefaultSystemScopes;
         options.DefaultUserScopes = udapServerOptions.DefaultUserScopes;
         options.ServerSupport = udapServerOptions.ServerSupport;
-        options.ForceStateParamOnAuthorizationCode = udapServerOptions.
-            ForceStateParamOnAuthorizationCode;
+        options.ForceStateParamOnAuthorizationCode = udapServerOptions.ForceStateParamOnAuthorizationCode;
     },
     storeOptionAction: options =>
         options.UdapDbContext = b =>
@@ -45,7 +49,11 @@ builder.Services.AddUdapServer(
     .AddSmartV2Expander();
 
 
-builder.Services.AddIdentityServer()
+builder.Services.AddIdentityServer(options =>
+    {
+        options.UserInteraction.LoginUrl = "/udapaccount/login";
+        options.UserInteraction.LogoutUrl = "/udapaccount/logout";
+    })
     .AddConfigurationStore(options =>
     {
         options.ConfigureDbContext = b => b.UseSqlite(connectionString,

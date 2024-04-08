@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Udap.Common;
 using udap.idp.server.devdays;
-using udap.idp.server.devdays.Pages;
 using Udap.Server.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
