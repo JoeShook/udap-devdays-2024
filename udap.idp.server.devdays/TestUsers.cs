@@ -8,7 +8,7 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Test;
 using IdentityModel;
 
-namespace udap.idp.server.devdays.Pages;
+namespace udap.idp.server.devdays;
 
 public class TestUsers
 {
@@ -23,7 +23,7 @@ public class TestUsers
                 postal_code = 69118,
                 country = "Germany"
             };
-                
+
             return new List<TestUser>
             {
                 new TestUser

@@ -46,10 +46,14 @@ IssueUdapClientCertificate(
         "http://localhost/fhir/r4"
     ],
     $"{certificateStore}/{community}/issued/{certName}",                                 //client certificate store Path
-    $"{BaseDir()}/../udap.fhirserver.devdays/{certificateStore}/{community}/issued/{certName}.pfx",
+    new List<string>(){
+        $"{BaseDir()}/../udap.fhirserver.devdays/{certificateStore}/{community}/issued/{certName}.pfx"
+    },
     $"http://localhost:{staticCertPort}/certs/DevDaysSubCA_1.crt",
     $"http://localhost:{staticCertPort}/crl/DevDaysSubCA_1.crl"
 );
+
+
 
 certName = "DevDaysIdpClient";
 IssueUdapClientCertificate(
@@ -58,16 +62,18 @@ IssueUdapClientCertificate(
     intermediateCert.GetRSAPrivateKey(),
     $"CN={certName}, OU=DevDays-Community1, O=Fhir Coding, L=Portland, S=Oregon, C=US",     //issuedDistinguishedName
     [
-        "https://localhost:5202/fhir/r4",
-        "https://host.docker.internal:5202/fhir/r4",
-        "http://localhost/fhir/r4"
+        "https://localhost:5202/",
+        "https://host.docker.internal:5202/",
+        "http://localhost/"
     ],                                                                                      //SubjAltNames (Demonstrate multiple)
     $"{certificateStore}/{community}/issued/{certName}",                                 //client certificate store Path
-    $"{BaseDir()}/../udap.idp.server.devdays/{certificateStore}/{community}/issued/{certName}.pfx",
+    new List<string>(){
+        $"{BaseDir()}/../udap.idp.server.devdays/{certificateStore}/{community}/issued/{certName}.pfx",
+        $"{BaseDir()}/../udap.authserver.devdays/{certificateStore}/{community}/issued/{certName}.pfx"
+    },
     $"http://localhost:{staticCertPort}/certs/DevDaysSubCA_1.crt",
     $"http://localhost:{staticCertPort}/crl/DevDaysSubCA_1.crl"
 );
-
 
 
 certName = "DevDaysECDSAClient";
@@ -129,7 +135,10 @@ IssueUdapClientCertificate(
         "http://localhost/fhir/r4"
     ],                                                                                  //SubjAltNames (Demonstrate multiple)
     $"{certificateStore}/{community}/issued/{certName}",                             //client certificate store Path
-    $"{BaseDir()}/../udap.fhirserver.devdays/{certificateStore}/{community}/issued/{certName}.pfx",
+    new List<string>()
+    {
+        $"{BaseDir()}/../udap.fhirserver.devdays/{certificateStore}/{community}/issued/{certName}.pfx"
+    },
     $"http://localhost:{staticCertPort}/certs/DevDaysSubCA_3.crt",
     $"http://localhost:{staticCertPort}/crl/DevDaysSubCA_3.crl"
 );
@@ -268,7 +277,7 @@ X509Certificate2 IssueUdapClientCertificate(
             string distinguishedName,
             List<string> subjectAltNames,
             string clientCertFilePath,
-            string deliveryPath,  // copy the certificate to a project like Fhir Server or Idp Server
+            List<string> deliveryPaths,  // copy the certificate to a project like Fhir Server or Idp Server
             string intermediateHostedUrl,
             string? crl,
             DateTimeOffset notBefore = default,
@@ -355,8 +364,11 @@ X509Certificate2 IssueUdapClientCertificate(
 
 
     //Distribute
-    deliveryPath.EnsureDirectoryExistFromFilePath();
-    File.Copy($"{clientCertFullFilePath}.pfx", deliveryPath , true);
+    foreach (var deliveryPath in deliveryPaths)
+    {
+        deliveryPath.EnsureDirectoryExistFromFilePath();
+        File.Copy($"{clientCertFullFilePath}.pfx", deliveryPath, true);
+    }
 
     return clientCert;
 }
