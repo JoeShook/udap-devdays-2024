@@ -266,7 +266,7 @@ Convenience links to find community specific UDAP metadata endpoints
 
   - options supply UDAP server options.
   - storeOptionAction indicates database type and connection string.
-  - baseUrl is important and must not be left out.
+  - baseUrl is important and must not be left out.  It can be included as seen below or via the UdapIdpBaseUrl environment variable.
   - AddUdapResonseGenerators() is required to augment IdTokens from Tiered Oauth Identity Providers to propogate the hl7_identifier._
   - AddSmrtV2Expander() implements rules to expand scopes where the scope parameter part may represent an encoded set of scopes like wild cards. 
 
@@ -292,6 +292,30 @@ Convenience links to find community specific UDAP metadata endpoints
     .AddUdapResponseGenerators()
     .AddSmartV2Expander();
 ```
+
+
+To override client include a UdapClientOptions in appsettings or configure it via the AddUdapServer method above.
+
+```csharp
+
+builder.Services.Configure<UdapClientOptions>(builder.Configuration.GetSection("UdapClientOptions"));
+
+```
+
+Example UdapClientOptions:
+
+```json
+  "UdapClientOptions": {
+    "ClientName": "udap.authserver.devdays",
+    "Contacts": [ "mailto:Joseph.Shook@Surescripts.com", "mailto:JoeShook@gmail.com" ],
+    "Headers": {
+      "USER_KEY": "hobojoe",
+      "ORG_KEY": "travelOrg"
+    },
+    "TieredOAuthClientLogo": "https://localhost:5102/_content/Udap.UI/udapAuthLogo.jpg"
+  }
+```
+
 
 #### Use the MS AuthenticationBuilder to add a standard Tiered OauthHandler implementation
 
@@ -341,10 +365,18 @@ be placed before ``UseIdentityServer()``.
 
 ### configure udap.idp.server.devdays
 
+```txt
+dotnet add package Udap.Metadata.Server
+dotnet add package Udap.Server
+dotnet add package Udap.UI
+dotnet add package Duende.IdentityServer.EntityFramework
+```
 
 #### Use ``IUdapServiceBuilder`` to configure the Idp UDAP server via the ``AddUdapServerAsIdentityProvider`` extension method. 
 
 ```csharp
+  builder.Services.AddRazorPages(); // includes AddAuthorization() and razor pages.  
+
   builder.Services.AddUdapServerAsIdentityProvider(
         options =>
         {
@@ -369,13 +401,31 @@ Then the following two lines will enabled the Idp UDAP Auth server to present si
 
 ```csharp
 
-  builder.Services.Configure<UdapClientOptions>(builder.Configuration.GetSection("UdapClientOptions"));
   builder.Services.Configure<UdapFileCertStoreManifest>(builder.Configuration.GetSection(Constants.UDAP_FILE_STORE_MANIFEST));
 
   builder.Services.AddUdapMetadataServer(builder.Configuration);
 
 ```
 
+Now configure Identity Server
+
+```csharp
+builder.Services.AddIdentityServer(options =>
+    {        
+        options.EmitStaticAudienceClaim = true;
+    })
+    .AddServerSideSessions()
+    .AddConfigurationStore(options =>
+        options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+            dbOpts => dbOpts.MigrationsAssembly(migrationsAssembly)))
+    .AddOperationalStore(options =>
+        options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+            dbOpts => dbOpts.MigrationsAssembly(migrationsAssembly)))
+
+    .AddResourceStore<ResourceStore>()
+    .AddClientStore<ClientStore>()
+    .AddTestUsers(TestUsers.Users);
+```
 
 #### pipeline configuration
 And finally this pipeline configuration will look similar to the AuthServer with the addition of a MedatadataSErver endpoint.
@@ -407,6 +457,48 @@ And finally this pipeline configuration will look similar to the AuthServer with
 
   app.Run();
 ```
+
+ 
+- The Idp server is acting similar to the FHIR Server above in that it can be auto registered with from a UDAP Authorization Server. 
+- Add the following UdapMetadataOptions section to appsettings.json
+
+````json
+  "UdapMetadataOptions": {
+    "Enabled": true,
+    "UdapMetadataConfigs": [
+      {
+        "Community": "udap://Community1",
+        "SignedMetadataConfig": {
+          "AuthorizationEndPoint": "https://localhost:5002/connect/authorize",
+          "TokenEndpoint": "https://localhost:5002/connect/token",
+          "RegistrationEndpoint": "https://localhost:5002/connect/register"
+        }
+      }
+    ]
+  }
+````
+
+- Add the following UdapFileCertStoreManifest section to appsettings.json.  The CertificateStore folder has already been added 
+to the project.  While it is a unsecure folder of certificates, you are free to implement your own ICertificateStore to
+load certificates from a secure location such as an HSM.  
+
+````json
+  "UdapFileCertStoreManifest": {
+    "Communities": [
+      {
+        "Name": "udap://Community1",
+        "IssuedCerts": [
+          {
+            "FilePath": "CertificateStore/Community1/issued/DevDaysFhirServerRSAClient.pfx",
+            "Password": "udap-test"
+          }
+        ]
+      }
+    ]     
+  }
+````
+
+
 
 
 ## Client Validation Demo
