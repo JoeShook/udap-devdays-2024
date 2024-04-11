@@ -294,7 +294,7 @@ Convenience links to find community specific UDAP metadata endpoints
 ```
 
 
-To override client include a UdapClientOptions in appsettings or configure it via the AddUdapServer method above.
+To configure UDAP client include a UdapClientOptions in appsettings or configure it via the AddUdapServer method above.
 
 ```csharp
 
