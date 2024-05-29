@@ -525,9 +525,9 @@ load certificates from a secure location such as an HSM.
 ````
 
 
+## Demos
 
-
-## Client Validation Demo
+### Client Validation Demo
 
 Validate the https://localhost:7017/fhir/r4/.well-known/udap signed metadata with [UdapEd UI Client](https://localhost:7041).  Upload the [Community1 anchor](./udap.pki.devdays/CertificateStore/Community1/DevDaysCA_1.crt) as the clients known trust anchor.
 
