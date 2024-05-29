@@ -296,6 +296,30 @@ dotnet add package Udap.UI
     .AddSmartV2Expander();
 ```
 
+Configure IdentityServer
+Notice the ```UserInteraction``` configuration ensures we use the UDAP.UI package enhancements for facilitating UDAP Tiered OAuth for User Authentication. 
+
+```csharp
+builder.Services.AddIdentityServer(options =>
+    {
+        options.UserInteraction.LoginUrl = "/udapaccount/login";
+        options.UserInteraction.LogoutUrl = "/udapaccount/logout";
+    })
+    .AddConfigurationStore(options =>
+    {
+        options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+            dbOpts => dbOpts.MigrationsAssembly(migrationsAssembly));
+    })
+    .AddOperationalStore(options =>
+    {
+        options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+            dbOpts => dbOpts.MigrationsAssembly(migrationsAssembly));
+
+    })
+    .AddResourceStore<ResourceStore>()
+    .AddClientStore<ClientStore>()
+    .AddTestUsers(TestUsers.Users);
+```
 
 To configure UDAP client include a UdapClientOptions in appsettings or configure it via the AddUdapServer method above.
 
