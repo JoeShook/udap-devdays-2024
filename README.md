@@ -290,7 +290,7 @@ dotnet add package Udap.UI
             b.UseSqlite(connectionString,
                 dbOpts =>
                     dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName)),
-    baseUrl: "https://localhost:5102/connect/register"
+    baseUrl: "https://localhost:5102"
     )
     .AddUdapResponseGenerators()
     .AddSmartV2Expander();
