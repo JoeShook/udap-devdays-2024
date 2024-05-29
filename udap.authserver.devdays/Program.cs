@@ -35,15 +35,14 @@ builder.Services.AddUdapServer(
         var udapServerOptions = builder.Configuration.GetOption<ServerSettings>("ServerSettings");
         options.DefaultSystemScopes = udapServerOptions.DefaultSystemScopes;
         options.DefaultUserScopes = udapServerOptions.DefaultUserScopes;
-        options.ServerSupport = udapServerOptions.ServerSupport;
         options.ForceStateParamOnAuthorizationCode = udapServerOptions.ForceStateParamOnAuthorizationCode;
     },
-    storeOptionAction: options =>
+    storeOptionAction: options => 
         options.UdapDbContext = b =>
             b.UseSqlite(connectionString,
                 dbOpts =>
                     dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName)),
-    baseUrl: "https://localhost:5102/connect/register"
+    baseUrl: "https://localhost:5102"
     )
     .AddUdapResponseGenerators()
     .AddSmartV2Expander();

@@ -283,9 +283,7 @@ dotnet add package Udap.UI
         var udapServerOptions = builder.Configuration.GetOption<ServerSettings>("ServerSettings");
         options.DefaultSystemScopes = udapServerOptions.DefaultSystemScopes;
         options.DefaultUserScopes = udapServerOptions.DefaultUserScopes;
-        options.ServerSupport = udapServerOptions.ServerSupport;
-        options.ForceStateParamOnAuthorizationCode = udapServerOptions.
-            ForceStateParamOnAuthorizationCode;
+        options.ForceStateParamOnAuthorizationCode = udapServerOptions.ForceStateParamOnAuthorizationCode;
     },
     storeOptionAction: options =>
         options.UdapDbContext = b =>
@@ -388,7 +386,6 @@ dotnet add package Duende.IdentityServer.EntityFramework
             var udapServerOptions = builder.Configuration.GetOption<ServerSettings>("ServerSettings");
             options.DefaultSystemScopes = udapServerOptions.DefaultSystemScopes;
             options.DefaultUserScopes = udapServerOptions.DefaultUserScopes;
-            options.ServerSupport = udapServerOptions.ServerSupport;
             options.ForceStateParamOnAuthorizationCode = udapServerOptions.ForceStateParamOnAuthorizationCode;
             options.LogoRequired = udapServerOptions.LogoRequired;
             options.AlwaysIncludeUserClaimsInIdToken = udapServerOptions.AlwaysIncludeUserClaimsInIdToken;

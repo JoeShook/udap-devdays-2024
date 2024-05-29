@@ -134,13 +134,26 @@ public static class SeedData
         await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV2Scopes("user", treatmentSpecification), scopeProperties);
         await SeedFhirScopes(configDbContext, Hl7ModelInfoExtensions.BuildHl7FhirV2Scopes("system", treatmentSpecification), scopeProperties);
 
-
+        //
+        // fhirUser
+        //
         if (configDbContext.IdentityResources.All(i => i.Name != UdapConstants.StandardScopes.FhirUser))
         {
             var fhirUserIdentity = new UdapIdentityResources.FhirUser();
             configDbContext.IdentityResources.Add(fhirUserIdentity.ToEntity());
 
             configDbContext.SaveChanges();
+        }
+
+        //
+        // udap
+        //
+        if (configDbContext.ApiScopes.All(i => i.Name != UdapConstants.StandardScopes.Udap))
+        {
+            var udapIdentity = new UdapApiScopes.Udap();
+            configDbContext.ApiScopes.Add(udapIdentity.ToEntity());
+
+            await configDbContext.SaveChangesAsync();
         }
     }
 

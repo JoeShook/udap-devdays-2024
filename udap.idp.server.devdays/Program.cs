@@ -26,7 +26,6 @@ builder.Services.AddUdapServerAsIdentityProvider(
             var udapServerOptions = builder.Configuration.GetOption<ServerSettings>("ServerSettings");
             options.DefaultSystemScopes = udapServerOptions.DefaultSystemScopes;
             options.DefaultUserScopes = udapServerOptions.DefaultUserScopes;
-            options.ServerSupport = udapServerOptions.ServerSupport;
             options.ForceStateParamOnAuthorizationCode = udapServerOptions.ForceStateParamOnAuthorizationCode;
             options.LogoRequired = udapServerOptions.LogoRequired;
             options.AlwaysIncludeUserClaimsInIdToken = udapServerOptions.AlwaysIncludeUserClaimsInIdToken;
