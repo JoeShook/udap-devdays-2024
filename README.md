@@ -551,17 +551,12 @@ An actual revoked certificate will be reported like the following.  This can be 
 [![Client Validation Demo](https://storage.googleapis.com/dotnet_udap_content/DevDays2023Metadata.jpg)](https://storage.googleapis.com/dotnet_udap_content/DevDays2023Metadata.mp4)
 
 
-### Simple UDAP OAuth Demo
-
-
 
 ### Udap Tiered OAuth Demo
 
+[Udap Tiered OAuth Demo](https://storage.googleapis.com/dotnet_udap_content/DevDays2024TieredOAuth.mp4)
 
-
-
-
-
+[![Udap Tiered OAuth Demo](https://storage.googleapis.com/dotnet_udap_content/DevDays2024TieredOAuth.jpg)](https://storage.googleapis.com/dotnet_udap_content/DevDays2024TieredOAuth.mp4)
 
 
 
