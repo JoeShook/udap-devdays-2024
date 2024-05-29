@@ -262,6 +262,11 @@ Convenience links to find community specific UDAP metadata endpoints
 
 ### configure udap.authserver.devdays
 
+```txt
+dotnet add package Udap.Server
+dotnet add package Udap.UI
+```
+
 #### Use ``IUdapServiceBuilder`` to configure the UDAP server via the ``AddUdapServer`` extension method. 
 
   - options supply UDAP server options.
