@@ -1,6 +1,6 @@
 ﻿# Deprecated
 
-While this is a valid tutorial all future work will be done in the [udap-dotnet-tutorial](https://github.com/udap-tools/udap-dotnet-tutorial) repository
+While this is a valid tutorial all future work will be done in the [udap-dotnet-tutorial](https://github.com/JoeShook/udap-dotnet-tutorial) repository
 
 # udap-devdays-2024
 
